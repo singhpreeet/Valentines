@@ -10,7 +10,7 @@
     <style>
         :root {
             --pink: #ff4d6d;
-            --glass: rgba(255, 255, 255, 0.4);
+            --glass: rgba(255, 255, 255, 0.6);
         }
 
         * {
@@ -26,8 +26,20 @@
             align-items: center;
             background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
             font-family: 'Quicksand', sans-serif;
-            overflow: hidden;
+            overflow: hidden; /* Prevent scrolling from hearts */
             transition: background 0.8s ease;
+            position: relative;
+        }
+
+        /* Dedicated Background Layer for Hearts */
+        #heart-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* Behind everything */
         }
 
         .card {
@@ -41,7 +53,7 @@
             text-align: center;
             width: 350px;
             max-width: 90%;
-            z-index: 100;
+            z-index: 10; /* Above hearts */
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -57,17 +69,19 @@
 
         .gif-box {
             height: 160px;
+            width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 10px;
+            background: white; /* Ensures multiply blend mode works perfectly */
+            border-radius: 20px;
+            overflow: hidden;
         }
 
         .gif-box img {
             max-width: 150px;
-            border-radius: 20px;
-            /* MAGIC TRICK: This removes the white background from your GIFs */
-            mix-blend-mode: multiply; 
+            mix-blend-mode: multiply; /* Removes white background from GIF */
         }
 
         .btn-group {
@@ -111,29 +125,29 @@
 
         .hidden { display: none; }
 
-        /* Floating Hearts Fix: Start below, end way above */
         .heart-float {
             position: absolute;
-            pointer-events: none;
-            z-index: 1; /* Behind the card */
-            animation: drift 6s linear infinite;
             bottom: -50px;
+            pointer-events: none;
+            animation: driftUp 6s linear forwards;
         }
 
-        @keyframes drift {
+        @keyframes driftUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
             10% { opacity: 0.8; }
             90% { opacity: 0.8; }
-            100% { transform: translateY(-130dvh) rotate(360deg); opacity: 0; }
+            100% { transform: translateY(-120dvh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
+    <div id="heart-container"></div>
+
     <div class="card">
         <div id="askSection">
             <div class="gif-box">
-                <img id="mainGif" src="" alt="Cat">
+                <img id="mainGif" src="" alt="Cute Cat">
             </div>
             <h1>Will you be my Valentine? 💖</h1>
             <div class="btn-group">
@@ -144,19 +158,18 @@
 
         <div id="successSection" class="hidden">
             <div class="gif-box">
-                <img id="successGif" src="" alt="Happy Cat">
+                <img id="successGif" src="" alt="Happy Cats">
             </div>
             <h1>Yay! I knew it! ❤️</h1>
-            <p style="color: #d63384; font-weight: bold;">Can't wait for Feb 14th! 🥰</p>
         </div>
     </div>
 
     <script>
-        // Direct media links to ensure they load on GitHub Pages
+        // Verified direct media links
         const Gifs = {
-            initial: "https://media.tenor.com/viS68_zAnX8AAAAi/peach-goma.gif",
-            noClicked: "https://media.tenor.com/bqo3X_p_0AAAAi/peach-goma-crying.gif",
-            success: "https://media.tenor.com/Epx69X_18oYAAAAi/peach-goma-peach-and-goma.gif"
+            initial: "https://media1.tenor.com/m/bkO6C_p_0AAAAi/peach-goma.gif",
+            noClicked: "https://media1.tenor.com/m/bqo3X_p_0AAAAi/peach-goma-crying.gif",
+            success: "https://media1.tenor.com/m/bihWd_p_0AAAAi/peach-and-goma-hug.gif"
         };
 
         const yesBtn = document.getElementById('yesBtn');
@@ -165,13 +178,15 @@
         const successGif = document.getElementById('successGif');
         const askSection = document.getElementById('askSection');
         const successSection = document.getElementById('successSection');
+        const heartContainer = document.getElementById('heart-container');
 
+        // Set initial state
         mainGif.src = Gifs.initial;
 
         let clickCount = 0;
-        let pVertical = 15;
-        let pHorizontal = 35;
-        let fSize = 1.2;
+        let pV = 15;
+        let pH = 35;
+        let fS = 1.2;
 
         const phrases = ["No", "Are you sure?", "Absolutely sure?"];
         const hearts = ['❤️', '💖', '💝', '💕', '💗'];
@@ -179,16 +194,17 @@
         noBtn.addEventListener('click', () => {
             clickCount++;
             
-            // Switch to the sadder GIF on first "No" click
+            // Swap to crying gif immediately
             if(clickCount === 1) {
                 mainGif.src = Gifs.noClicked;
             }
 
-            pVertical += 12;
-            pHorizontal += 20;
-            fSize += 0.3;
-            yesBtn.style.padding = `${pVertical}px ${pHorizontal}px`;
-            yesBtn.style.fontSize = `${fSize}rem`;
+            // Growth logic
+            pV += 12;
+            pH += 20;
+            fS += 0.3;
+            yesBtn.style.padding = `${pV}px ${pH}px`;
+            yesBtn.style.fontSize = `${fS}rem`;
 
             if (clickCount < 3) {
                 noBtn.innerText = phrases[clickCount];
@@ -204,6 +220,7 @@
             successSection.classList.remove('hidden');
             document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
 
+            // Confetti Cannon
             const end = Date.now() + 3000;
             (function frame() {
               confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#ff4d6d', '#ffffff'] });
@@ -212,14 +229,17 @@
             }());
         });
 
+        // Heart Spawner (Spawns in global container to avoid clipping)
         function spawnHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart-float';
             heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
-            document.body.appendChild(heart);
+            heart.style.animationDuration = (Math.random() * 2 + 4) + 's';
+            heartContainer.appendChild(heart);
+            
+            // Garbage collection
             setTimeout(() => heart.remove(), 6000);
         }
         setInterval(spawnHeart, 400);
