@@ -10,18 +10,16 @@
     <style>
         :root {
             --pink: #ff4d6d;
-            --light-pink: #ffdde1;
             --glass: rgba(255, 255, 255, 0.4);
         }
 
         * {
             box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent; /* Clean touch for iOS */
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             margin: 0;
-            /* Use dvh to prevent Safari UI overlap issues */
             height: 100dvh;
             display: flex;
             justify-content: center;
@@ -37,49 +35,57 @@
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 2rem;
+            padding: 2.5rem 1.5rem;
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
-            width: 340px;
-            max-width: 85%;
+            width: 350px;
+            max-width: 90%;
             z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         h1 {
             font-family: 'Dancing Script', cursive;
             color: #d63384;
             font-size: 2.2rem;
-            margin: 15px 0;
+            margin: 10px 0 20px 0;
+        }
+
+        .gif-box {
+            height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
         }
 
         .gif-box img {
-            width: 150px;
+            max-width: 150px;
             border-radius: 20px;
-            pointer-events: none;
         }
 
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 15px; /* Critical: This keeps the buttons separated as they grow */
             align-items: center;
-            margin-top: 20px;
+            width: 100%;
         }
 
         #yesBtn {
             background: var(--pink);
             color: white;
             border: none;
-            padding: 16px 40px;
+            padding: 15px 35px;
             border-radius: 50px;
             font-size: 1.2rem;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
-            /* This makes the growth feel "squishy" and high-end */
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 20;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         #noBtn {
@@ -90,54 +96,41 @@
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 500;
+            cursor: pointer;
             transition: all 0.2s ease;
+            white-space: nowrap;
         }
 
-        /* The "Stuck" state */
         .unclickable {
-            background: #f0f0f0 !important;
-            color: #ccc !important;
+            background: #eee !important;
+            color: #bbb !important;
             pointer-events: none;
-            opacity: 0.8;
         }
 
         .hidden { display: none; }
 
-        /* Floating Animation */
-        .petal {
+        /* Floating Hearts Animation */
+        .heart-float {
             position: absolute;
             pointer-events: none;
             z-index: 1;
-            animation: drift 7s linear infinite;
+            animation: drift 6s linear infinite;
         }
 
         @keyframes drift {
             0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-        }
-
-        /* Success Animation */
-        .celebrate {
-            animation: heartBeat 1.5s infinite;
-        }
-
-        @keyframes heartBeat {
-            0% { transform: scale(1); }
-            14% { transform: scale(1.1); }
-            28% { transform: scale(1); }
-            42% { transform: scale(1.1); }
-            70% { transform: scale(1); }
         }
     </style>
 </head>
 <body>
 
-    <div class="card" id="mainCard">
+    <div class="card">
         <div id="askSection">
             <div class="gif-box">
-                <img src="https://media.tenor.com/On7be9S8v3AAAAAi/goma-happy.gif" alt="Waiting...">
+                <img id="mainGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF5cTF5eXF5eXF5eXF5eXF5eXF5eXF5eXF5eXF5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/cLS1zl2mGLec9v7pMa/giphy.gif" alt="Waiting Cat">
             </div>
             <h1>Will you be my Valentine? 💖</h1>
             <div class="btn-group">
@@ -147,11 +140,11 @@
         </div>
 
         <div id="successSection" class="hidden">
-            <div class="gif-box celebrate">
-                <img src="https://media.tenor.com/gU_9uYf_R20AAAAi/peach-goma-peach-and-goma.gif" alt="Happy!">
+            <div class="gif-box">
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1eXF5cTF5eXF5eXF5eXF5eXF5eXF5eXF5eXF5eXF5ZCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/MDJ9IbM3vuzS6tVwLp/giphy.gif" alt="Happy Cat">
             </div>
             <h1>Yay! I knew it! ❤️</h1>
-            <p style="color: #d63384; font-weight: bold;">Get ready for the 14th! 🥰</p>
+            <p style="color: #d63384; font-weight: bold;">I love you! 🥰</p>
         </div>
     </div>
 
@@ -162,16 +155,23 @@
         const successSection = document.getElementById('successSection');
 
         let clickCount = 0;
-        let yesScale = 1;
-        const phrases = ["No", "Are you sure?", "Absolutely sure?"];
+        let pVertical = 15;
+        let pHorizontal = 35;
+        let fSize = 1.2;
 
-        // No Button Logic
+        const phrases = ["No", "Are you sure?", "Absolutely sure?"];
+        const hearts = ['❤️', '💖', '💝', '💕', '💗'];
+
+        // Grow Yes Button physically
         noBtn.addEventListener('click', () => {
             clickCount++;
             
-            // Increment Yes button size
-            yesScale += 0.6;
-            yesBtn.style.transform = `scale(${yesScale})`;
+            pVertical += 12;
+            pHorizontal += 20;
+            fSize += 0.3;
+
+            yesBtn.style.padding = `${pVertical}px ${pHorizontal}px`;
+            yesBtn.style.fontSize = `${fSize}rem`;
 
             if (clickCount < 3) {
                 noBtn.innerText = phrases[clickCount];
@@ -181,51 +181,44 @@
             }
         });
 
-        // Yes Button Logic
+        // Celebration
         yesBtn.addEventListener('click', () => {
-            // UI Transition
             askSection.classList.add('hidden');
             successSection.classList.remove('hidden');
             document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
 
-            // Confetti Cannon
-            const duration = 3 * 1000;
-            const end = Date.now() + duration;
-
+            const end = Date.now() + 3000;
             (function frame() {
-              confetti({
-                particleCount: 3,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 },
-                colors: ['#ff4d6d', '#ffffff']
+              confetti({ 
+                  particleCount: 3, 
+                  angle: 60, 
+                  spread: 55, 
+                  origin: { x: 0, y: 0.8 }, 
+                  colors: ['#ff4d6d', '#ffffff'] 
               });
-              confetti({
-                particleCount: 3,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 },
-                colors: ['#ff4d6d', '#ffffff']
+              confetti({ 
+                  particleCount: 3, 
+                  angle: 120, 
+                  spread: 55, 
+                  origin: { x: 1, y: 0.8 }, 
+                  colors: ['#ff4d6d', '#ffffff'] 
               });
-
-              if (Date.now() < end) {
-                requestAnimationFrame(frame);
-              }
+              if (Date.now() < end) requestAnimationFrame(frame);
             }());
         });
 
-        // Background Petals
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            petal.innerHTML = '🌸';
-            petal.style.left = Math.random() * 100 + 'vw';
-            petal.style.fontSize = (Math.random() * 15 + 10) + 'px';
-            petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
-            document.body.appendChild(petal);
-            setTimeout(() => petal.remove(), 7000);
+        // Background Hearts
+        function spawnHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'heart-float';
+            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            document.body.appendChild(heart);
+            setTimeout(() => heart.remove(), 6000);
         }
-        setInterval(createPetal, 600);
+        setInterval(spawnHeart, 400);
     </script>
 </body>
 </html>
