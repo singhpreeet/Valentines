@@ -10,7 +10,7 @@
     <style>
         :root {
             --pink: #ff4d6d;
-            --glass: rgba(255, 255, 255, 0.6);
+            --glass: rgba(255, 255, 255, 0.3);
         }
 
         * {
@@ -26,12 +26,11 @@
             align-items: center;
             background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
             font-family: 'Quicksand', sans-serif;
-            overflow: hidden; /* Prevent scrolling from hearts */
-            transition: background 0.8s ease;
+            overflow: hidden;
             position: relative;
         }
 
-        /* Dedicated Background Layer for Hearts */
+        /* Background Layer for Hearts */
         #heart-container {
             position: fixed;
             top: 0;
@@ -39,25 +38,24 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 1; /* Behind everything */
+            z-index: 1;
         }
 
         .card {
             background: var(--glass);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 2.5rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            padding: 2rem 1rem;
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
             width: 350px;
             max-width: 90%;
-            z-index: 10; /* Above hearts */
+            z-index: 10;
             display: flex;
             flex-direction: column;
             align-items: center;
-            position: relative;
         }
 
         h1 {
@@ -67,21 +65,20 @@
             margin: 10px 0 20px 0;
         }
 
+        /* GIF Container - Adjusted for Tenor Embeds */
         .gif-box {
-            height: 160px;
             width: 100%;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 10px;
-            background: white; /* Ensures multiply blend mode works perfectly */
-            border-radius: 20px;
             overflow: hidden;
         }
 
-        .gif-box img {
-            max-width: 150px;
-            mix-blend-mode: multiply; /* Removes white background from GIF */
+        iframe {
+            border: none;
+            pointer-events: none; /* Prevents clicking inside the GIF */
         }
 
         .btn-group {
@@ -125,6 +122,7 @@
 
         .hidden { display: none; }
 
+        /* Floating Hearts Animation Fix */
         .heart-float {
             position: absolute;
             bottom: -50px;
@@ -134,9 +132,9 @@
 
         @keyframes driftUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.8; }
-            90% { opacity: 0.8; }
-            100% { transform: translateY(-120dvh) rotate(360deg); opacity: 0; }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { transform: translateY(-125dvh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -146,8 +144,8 @@
 
     <div class="card">
         <div id="askSection">
-            <div class="gif-box">
-                <img id="mainGif" src="" alt="Cute Cat">
+            <div class="gif-box" id="gifWrapper">
+                <iframe id="tenorIframe" src="https://tenor.com/embed/14105358" width="100%" height="200"></iframe>
             </div>
             <h1>Will you be my Valentine? 💖</h1>
             <div class="btn-group">
@@ -158,30 +156,27 @@
 
         <div id="successSection" class="hidden">
             <div class="gif-box">
-                <img id="successGif" src="" alt="Happy Cats">
+                <iframe id="successIframe" src="" width="100%" height="200"></iframe>
             </div>
             <h1>Yay! I knew it! ❤️</h1>
         </div>
     </div>
 
     <script>
-        // Verified direct media links
-        const Gifs = {
-            initial: "https://media1.tenor.com/m/bkO6C_p_0AAAAi/peach-goma.gif",
-            noClicked: "https://media1.tenor.com/m/bqo3X_p_0AAAAi/peach-goma-crying.gif",
-            success: "https://media1.tenor.com/m/bihWd_p_0AAAAi/peach-and-goma-hug.gif"
+        // Post IDs from your provided embed links
+        const PostIDs = {
+            initial: "14105358",
+            noClicked: "21118747",
+            success: "17316232421502785886"
         };
 
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
-        const mainGif = document.getElementById('mainGif');
-        const successGif = document.getElementById('successGif');
+        const tenorIframe = document.getElementById('tenorIframe');
+        const successIframe = document.getElementById('successIframe');
         const askSection = document.getElementById('askSection');
         const successSection = document.getElementById('successSection');
         const heartContainer = document.getElementById('heart-container');
-
-        // Set initial state
-        mainGif.src = Gifs.initial;
 
         let clickCount = 0;
         let pV = 15;
@@ -194,18 +189,19 @@
         noBtn.addEventListener('click', () => {
             clickCount++;
             
-            // Swap to crying gif immediately
+            // Swap to the cute crying/pleading GIF on first click
             if(clickCount === 1) {
-                mainGif.src = Gifs.noClicked;
+                tenorIframe.src = `https://tenor.com/embed/${PostIDs.noClicked}`;
             }
 
-            // Growth logic
-            pV += 12;
-            pH += 20;
-            fS += 0.3;
+            // Grow the YES button physically
+            pV += 15;
+            pH += 25;
+            fS += 0.4;
             yesBtn.style.padding = `${pV}px ${pH}px`;
             yesBtn.style.fontSize = `${fS}rem`;
 
+            // Update NO button text
             if (clickCount < 3) {
                 noBtn.innerText = phrases[clickCount];
             } else {
@@ -215,12 +211,13 @@
         });
 
         yesBtn.addEventListener('click', () => {
-            successGif.src = Gifs.success;
+            // Set success GIF and switch sections
+            successIframe.src = `https://tenor.com/embed/${PostIDs.success}`;
             askSection.classList.add('hidden');
             successSection.classList.remove('hidden');
             document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
 
-            // Confetti Cannon
+            // Confetti
             const end = Date.now() + 3000;
             (function frame() {
               confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#ff4d6d', '#ffffff'] });
@@ -229,17 +226,15 @@
             }());
         });
 
-        // Heart Spawner (Spawns in global container to avoid clipping)
+        // Background Hearts Logic
         function spawnHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart-float';
             heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-            heart.style.animationDuration = (Math.random() * 2 + 4) + 's';
+            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
             heartContainer.appendChild(heart);
-            
-            // Garbage collection
             setTimeout(() => heart.remove(), 6000);
         }
         setInterval(spawnHeart, 400);
