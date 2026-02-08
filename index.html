@@ -2,10 +2,230 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Message 💖</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    
+    <style>
+        :root {
+            --pink: #ff4d6d;
+            --light-pink: #ffdde1;
+            --glass: rgba(255, 255, 255, 0.4);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent; /* Clean touch for iOS */
+        }
+
+        body {
+            margin: 0;
+            /* Use dvh to prevent Safari UI overlap issues */
+            height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden;
+            transition: background 0.8s ease;
+        }
+
+        .card {
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 2rem;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 340px;
+            max-width: 85%;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            color: #d63384;
+            font-size: 2.2rem;
+            margin: 15px 0;
+        }
+
+        .gif-box img {
+            width: 150px;
+            border-radius: 20px;
+            pointer-events: none;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #yesBtn {
+            background: var(--pink);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
+            /* This makes the growth feel "squishy" and high-end */
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 20;
+        }
+
+        #noBtn {
+            background: white;
+            color: #999;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        /* The "Stuck" state */
+        .unclickable {
+            background: #f0f0f0 !important;
+            color: #ccc !important;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .hidden { display: none; }
+
+        /* Floating Animation */
+        .petal {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            animation: drift 7s linear infinite;
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Success Animation */
+        .celebrate {
+            animation: heartBeat 1.5s infinite;
+        }
+
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.1); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.1); }
+            70% { transform: scale(1); }
+        }
+    </style>
 </head>
 <body>
 
+    <div class="card" id="mainCard">
+        <div id="askSection">
+            <div class="gif-box">
+                <img src="https://media.tenor.com/On7be9S8v3AAAAAi/goma-happy.gif" alt="Waiting...">
+            </div>
+            <h1>Will you be my Valentine? 💖</h1>
+            <div class="btn-group">
+                <button id="yesBtn">YES! ✨</button>
+                <button id="noBtn">No</button>
+            </div>
+        </div>
+
+        <div id="successSection" class="hidden">
+            <div class="gif-box celebrate">
+                <img src="https://media.tenor.com/gU_9uYf_R20AAAAi/peach-goma-peach-and-goma.gif" alt="Happy!">
+            </div>
+            <h1>Yay! I knew it! ❤️</h1>
+            <p style="color: #d63384; font-weight: bold;">Get ready for the 14th! 🥰</p>
+        </div>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const askSection = document.getElementById('askSection');
+        const successSection = document.getElementById('successSection');
+
+        let clickCount = 0;
+        let yesScale = 1;
+        const phrases = ["No", "Are you sure?", "Absolutely sure?"];
+
+        // No Button Logic
+        noBtn.addEventListener('click', () => {
+            clickCount++;
+            
+            // Increment Yes button size
+            yesScale += 0.6;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            if (clickCount < 3) {
+                noBtn.innerText = phrases[clickCount];
+            } else {
+                noBtn.innerText = "You don't have that option.";
+                noBtn.classList.add('unclickable');
+            }
+        });
+
+        // Yes Button Logic
+        yesBtn.addEventListener('click', () => {
+            // UI Transition
+            askSection.classList.add('hidden');
+            successSection.classList.remove('hidden');
+            document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
+
+            // Confetti Cannon
+            const duration = 3 * 1000;
+            const end = Date.now() + duration;
+
+            (function frame() {
+              confetti({
+                particleCount: 3,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0 },
+                colors: ['#ff4d6d', '#ffffff']
+              });
+              confetti({
+                particleCount: 3,
+                angle: 120,
+                spread: 55,
+                origin: { x: 1 },
+                colors: ['#ff4d6d', '#ffffff']
+              });
+
+              if (Date.now() < end) {
+                requestAnimationFrame(frame);
+              }
+            }());
+        });
+
+        // Background Petals
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.innerHTML = '🌸';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            petal.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.body.appendChild(petal);
+            setTimeout(() => petal.remove(), 7000);
+        }
+        setInterval(createPetal, 600);
+    </script>
 </body>
 </html>
