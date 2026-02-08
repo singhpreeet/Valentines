@@ -10,7 +10,7 @@
     <style>
         :root {
             --pink: #ff4d6d;
-            --glass: rgba(255, 255, 255, 0.3);
+            --glass: rgba(255, 255, 255, 0.2); /* Reduced opacity for better blend */
         }
 
         * {
@@ -30,7 +30,6 @@
             position: relative;
         }
 
-        /* Background Layer for Hearts */
         #heart-container {
             position: fixed;
             top: 0;
@@ -45,8 +44,8 @@
             background: var(--glass);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            padding: 2rem 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 2.5rem 1.5rem;
             border-radius: 30px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             text-align: center;
@@ -65,20 +64,21 @@
             margin: 10px 0 20px 0;
         }
 
-        /* GIF Container - Adjusted for Tenor Embeds */
         .gif-box {
             width: 100%;
-            height: 200px;
+            height: 160px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 10px;
-            overflow: hidden;
+            margin-bottom: 20px;
+            /* No background here so the blend mode works with the card's color */
         }
 
-        iframe {
-            border: none;
-            pointer-events: none; /* Prevents clicking inside the GIF */
+        .gif-box img {
+            max-width: 160px;
+            border-radius: 15px;
+            /* This is the magic: it hides the white background of the GIF */
+            mix-blend-mode: multiply;
         }
 
         .btn-group {
@@ -122,7 +122,6 @@
 
         .hidden { display: none; }
 
-        /* Floating Hearts Animation Fix */
         .heart-float {
             position: absolute;
             bottom: -50px;
@@ -132,9 +131,9 @@
 
         @keyframes driftUp {
             0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.7; }
-            90% { opacity: 0.7; }
-            100% { transform: translateY(-125dvh) rotate(360deg); opacity: 0; }
+            10% { opacity: 0.6; }
+            90% { opacity: 0.6; }
+            100% { transform: translateY(-130dvh) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
@@ -144,8 +143,8 @@
 
     <div class="card">
         <div id="askSection">
-            <div class="gif-box" id="gifWrapper">
-                <iframe id="tenorIframe" src="https://tenor.com/embed/14105358" width="100%" height="200"></iframe>
+            <div class="gif-box">
+                <img id="mainGif" src="" alt="Cat">
             </div>
             <h1>Will you be my Valentine? 💖</h1>
             <div class="btn-group">
@@ -156,27 +155,29 @@
 
         <div id="successSection" class="hidden">
             <div class="gif-box">
-                <iframe id="successIframe" src="" width="100%" height="200"></iframe>
+                <img id="successGif" src="" alt="Happy Cat">
             </div>
             <h1>Yay! I knew it! ❤️</h1>
         </div>
     </div>
 
     <script>
-        // Post IDs from your provided embed links
-        const PostIDs = {
-            initial: "14105358",
-            noClicked: "21118747",
-            success: "17316232421502785886"
+        // Using the direct media links for the IDs you provided
+        const Gifs = {
+            initial: "https://media1.tenor.com/m/viS68_zAnX8AAAAi/peach-goma.gif",
+            noClicked: "https://media1.tenor.com/m/O96mD6_9x6IAAAAi/mocha-mochi.gif",
+            success: "https://media1.tenor.com/m/Epx69X_18oYAAAAi/peach-goma-peach-and-goma.gif"
         };
 
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
-        const tenorIframe = document.getElementById('tenorIframe');
-        const successIframe = document.getElementById('successIframe');
+        const mainGif = document.getElementById('mainGif');
+        const successGif = document.getElementById('successGif');
         const askSection = document.getElementById('askSection');
         const successSection = document.getElementById('successSection');
         const heartContainer = document.getElementById('heart-container');
+
+        mainGif.src = Gifs.initial;
 
         let clickCount = 0;
         let pV = 15;
@@ -188,20 +189,14 @@
 
         noBtn.addEventListener('click', () => {
             clickCount++;
-            
-            // Swap to the cute crying/pleading GIF on first click
-            if(clickCount === 1) {
-                tenorIframe.src = `https://tenor.com/embed/${PostIDs.noClicked}`;
-            }
+            if(clickCount === 1) mainGif.src = Gifs.noClicked;
 
-            // Grow the YES button physically
             pV += 15;
             pH += 25;
             fS += 0.4;
             yesBtn.style.padding = `${pV}px ${pH}px`;
             yesBtn.style.fontSize = `${fS}rem`;
 
-            // Update NO button text
             if (clickCount < 3) {
                 noBtn.innerText = phrases[clickCount];
             } else {
@@ -211,13 +206,11 @@
         });
 
         yesBtn.addEventListener('click', () => {
-            // Set success GIF and switch sections
-            successIframe.src = `https://tenor.com/embed/${PostIDs.success}`;
+            successGif.src = Gifs.success;
             askSection.classList.add('hidden');
             successSection.classList.remove('hidden');
             document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
 
-            // Confetti
             const end = Date.now() + 3000;
             (function frame() {
               confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#ff4d6d', '#ffffff'] });
@@ -226,14 +219,13 @@
             }());
         });
 
-        // Background Hearts Logic
         function spawnHeart() {
             const heart = document.createElement('div');
             heart.className = 'heart-float';
             heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
             heart.style.left = Math.random() * 100 + 'vw';
             heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-            heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+            heart.style.animationDuration = (Math.random() * 2 + 4) + 's';
             heartContainer.appendChild(heart);
             setTimeout(() => heart.remove(), 6000);
         }
