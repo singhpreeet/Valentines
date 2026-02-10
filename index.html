@@ -1,235 +1,270 @@
-<!DOCTYPE html> 
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>A Special Message 💖</title>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Very Important</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
+
     <style>
-        :root {
-            --pink: #ff4d6d;
-            --glass: rgba(255, 255, 255, 0.2); /* Reduced opacity for better blend */
-        }
+      :root {
+        --pink: #ff4d6d;
+        --glass: rgba(255, 255, 255, 0.3);
+      }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-        body {
-            margin: 0;
-            height: 100dvh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
-            font-family: 'Quicksand', sans-serif;
-            overflow: hidden;
-            position: relative;
-        }
+      body {
+        margin: 0;
+        height: 100dvh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%);
+        font-family: "Quicksand", sans-serif;
+        overflow: hidden;
+        position: relative;
+      }
 
-        #heart-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
+      #heart-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+      }
 
-        .card {
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 2.5rem 1.5rem;
-            border-radius: 30px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            text-align: center;
-            width: 350px;
-            max-width: 90%;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+      .card {
+        background: var(--glass);
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        padding: 2.5rem 1.5rem;
+        border-radius: 30px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 350px;
+        max-width: 90%;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
 
-        h1 {
-            font-family: 'Dancing Script', cursive;
-            color: #d63384;
-            font-size: 2.2rem;
-            margin: 10px 0 20px 0;
-        }
+      h1 {
+        font-family: "Dancing Script", cursive;
+        color: #d63384;
+        font-size: 2.2rem;
+        margin: 15px 0 25px 0;
+      }
 
-        .gif-box {
-            width: 100%;
-            height: 160px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            /* No background here so the blend mode works with the card's color */
-        }
+      .gif-box {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 10px;
+        /* Fixed height to prevent jumping when toggling */
+        height: 180px;
+      }
 
-        .gif-box img {
-            max-width: 160px;
-            border-radius: 15px;
-            /* This is the magic: it hides the white background of the GIF */
-            mix-blend-mode: multiply;
-        }
+      /* APPLY TRANSPARENCY TRICK TO ALL IMAGES */
+      .gif-box img {
+        max-width: 180px;
+        max-height: 180px;
+        border-radius: 20px;
+        /* This forces white backgrounds to be transparent */
+        mix-blend-mode: multiply;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.05));
+      }
 
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px; 
-            align-items: center;
-            width: 100%;
-        }
+      .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        width: 100%;
+      }
 
-        #yesBtn {
-            background: var(--pink);
-            color: white;
-            border: none;
-            padding: 15px 35px;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            cursor: pointer;
-            box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+      #yesBtn {
+        background: var(--pink);
+        color: white;
+        border: none;
+        padding: 15px 35px;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 8px 15px rgba(255, 77, 109, 0.3);
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
 
-        #noBtn {
-            background: white;
-            color: #999;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
+      #noBtn {
+        background: white;
+        color: #999;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
 
-        .unclickable {
-            background: #eee !important;
-            color: #bbb !important;
-            pointer-events: none;
-        }
+      .unclickable {
+        background: #eee !important;
+        color: #bbb !important;
+        pointer-events: none;
+      }
 
-        .hidden { display: none; }
+      /* Utility class to hide elements */
+      .hidden {
+        display: none !important;
+      }
 
-        .heart-float {
-            position: absolute;
-            bottom: -50px;
-            pointer-events: none;
-            animation: driftUp 6s linear forwards;
-        }
+      .heart-float {
+        position: absolute;
+        bottom: -50px;
+        pointer-events: none;
+        animation: driftUp 6s linear forwards;
+      }
 
-        @keyframes driftUp {
-            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.6; }
-            90% { opacity: 0.6; }
-            100% { transform: translateY(-130dvh) rotate(360deg); opacity: 0; }
+      @keyframes driftUp {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 0;
         }
+        10% {
+          opacity: 0.7;
+        }
+        90% {
+          opacity: 0.7;
+        }
+        100% {
+          transform: translateY(-125dvh) rotate(360deg);
+          opacity: 0;
+        }
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <div id="heart-container"></div>
 
     <div class="card">
-        <div id="askSection">
-            <div class="gif-box">
-                <img id="mainGif" src="" alt="Cat">
-            </div>
-            <h1>Will you be my Valentine? 💖</h1>
-            <div class="btn-group">
-                <button id="yesBtn">YES! ✨</button>
-                <button id="noBtn">No</button>
-            </div>
+      <div id="askSection">
+        <div class="gif-box">
+          <img id="gif-start" src="./1.gif" alt="Cute Cat" />
+          <img id="gif-sad" class="hidden" src="./2.gif" alt="Sad Cat" />
         </div>
+        <h1>Will you be my Valentine? 💖</h1>
+        <div class="btn-group">
+          <button id="yesBtn">YES! ✨</button>
+          <button id="noBtn">No</button>
+        </div>
+      </div>
 
-        <div id="successSection" class="hidden">
-            <div class="gif-box">
-                <img id="successGif" src="" alt="Happy Cat">
-            </div>
-            <h1>Yay! I knew it! ❤️</h1>
+      <div id="successSection" class="hidden">
+        <div class="gif-box">
+          <img id="gif-success" src="./3.gif" alt="Happy Cat" />
         </div>
+        <h1>Yay! I knew it! ❤️</h1>
+      </div>
     </div>
 
     <script>
-        // Using the direct media links for the IDs you provided
-        const Gifs = {
-            initial: "https://media1.tenor.com/m/viS68_zAnX8AAAAi/peach-goma.gif",
-            noClicked: "https://media1.tenor.com/m/O96mD6_9x6IAAAAi/mocha-mochi.gif",
-            success: "https://media1.tenor.com/m/Epx69X_18oYAAAAi/peach-goma-peach-and-goma.gif"
-        };
+      const yesBtn = document.getElementById("yesBtn");
+      const noBtn = document.getElementById("noBtn");
+      const askSection = document.getElementById("askSection");
+      const successSection = document.getElementById("successSection");
+      const heartContainer = document.getElementById("heart-container");
 
-        const yesBtn = document.getElementById('yesBtn');
-        const noBtn = document.getElementById('noBtn');
-        const mainGif = document.getElementById('mainGif');
-        const successGif = document.getElementById('successGif');
-        const askSection = document.getElementById('askSection');
-        const successSection = document.getElementById('successSection');
-        const heartContainer = document.getElementById('heart-container');
+      // Get references to the specific image elements
+      const gifStart = document.getElementById("gif-start");
+      const gifSad = document.getElementById("gif-sad");
 
-        mainGif.src = Gifs.initial;
+      let clickCount = 0;
+      let pV = 15;
+      let pH = 35;
+      let fS = 1.2;
 
-        let clickCount = 0;
-        let pV = 15;
-        let pH = 35;
-        let fS = 1.2;
+      const phrases = ["No", "Are you sure?", "Absolutely sure?"];
+      const hearts = ["❤️", "💖", "💝", "💕", "💗"];
 
-        const phrases = ["No", "Are you sure?", "Absolutely sure?"];
-        const hearts = ['❤️', '💖', '💝', '💕', '💗'];
+      noBtn.addEventListener("click", () => {
+        clickCount++;
 
-        noBtn.addEventListener('click', () => {
-            clickCount++;
-            if(clickCount === 1) mainGif.src = Gifs.noClicked;
-
-            pV += 15;
-            pH += 25;
-            fS += 0.4;
-            yesBtn.style.padding = `${pV}px ${pH}px`;
-            yesBtn.style.fontSize = `${fS}rem`;
-
-            if (clickCount < 3) {
-                noBtn.innerText = phrases[clickCount];
-            } else {
-                noBtn.innerText = "You don't have that option.";
-                noBtn.classList.add('unclickable');
-            }
-        });
-
-        yesBtn.addEventListener('click', () => {
-            successGif.src = Gifs.success;
-            askSection.classList.add('hidden');
-            successSection.classList.remove('hidden');
-            document.body.style.background = "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
-
-            const end = Date.now() + 3000;
-            (function frame() {
-              confetti({ particleCount: 3, angle: 60, spread: 55, origin: { x: 0, y: 0.8 }, colors: ['#ff4d6d', '#ffffff'] });
-              confetti({ particleCount: 3, angle: 120, spread: 55, origin: { x: 1, y: 0.8 }, colors: ['#ff4d6d', '#ffffff'] });
-              if (Date.now() < end) requestAnimationFrame(frame);
-            }());
-        });
-
-        function spawnHeart() {
-            const heart = document.createElement('div');
-            heart.className = 'heart-float';
-            heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
-            heart.style.left = Math.random() * 100 + 'vw';
-            heart.style.fontSize = (Math.random() * 15 + 15) + 'px';
-            heart.style.animationDuration = (Math.random() * 2 + 4) + 's';
-            heartContainer.appendChild(heart);
-            setTimeout(() => heart.remove(), 6000);
+        // TOGGLE VISIBILITY on first click
+        if (clickCount === 1) {
+          gifStart.classList.add("hidden");
+          gifSad.classList.remove("hidden");
         }
-        setInterval(spawnHeart, 400);
+
+        // Grow YES button
+        pV += 15;
+        pH += 25;
+        fS += 0.4;
+        yesBtn.style.padding = `${pV}px ${pH}px`;
+        yesBtn.style.fontSize = `${fS}rem`;
+
+        // Update text
+        if (clickCount < 3) {
+          noBtn.innerText = phrases[clickCount];
+        } else {
+          noBtn.innerText = "You don't have that option.";
+          noBtn.classList.add("unclickable");
+        }
+      });
+
+      yesBtn.addEventListener("click", () => {
+        // Switch whole sections
+        askSection.classList.add("hidden");
+        successSection.classList.remove("hidden");
+        document.body.style.background =
+          "linear-gradient(135deg, #ff4d6d 0%, #ee9ca7 100%)";
+
+        const end = Date.now() + 3000;
+        (function frame() {
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: {x: 0, y: 0.8},
+            colors: ["#ff4d6d", "#ffffff"],
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: {x: 1, y: 0.8},
+            colors: ["#ff4d6d", "#ffffff"],
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
+      });
+
+      function spawnHeart() {
+        const heart = document.createElement("div");
+        heart.className = "heart-float";
+        heart.innerHTML = hearts[Math.floor(Math.random() * hearts.length)];
+        heart.style.left = Math.random() * 100 + "vw";
+        heart.style.fontSize = Math.random() * 15 + 15 + "px";
+        heart.style.animationDuration = Math.random() * 2 + 4 + "s";
+        heartContainer.appendChild(heart);
+        setTimeout(() => heart.remove(), 6000);
+      }
+      setInterval(spawnHeart, 400);
     </script>
-</body>
+  </body>
 </html>
